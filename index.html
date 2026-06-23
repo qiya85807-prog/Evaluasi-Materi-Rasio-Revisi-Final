@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Evaluasi Materi Rasio - Evaluasi Materi Rasio Kelas VII Berbasis Digital merupakan media penilaian yang dirancang untuk mengukur pemahaman peserta didik sekaligus mendukung pelaksanaan evaluasi pembelajaran yang lebih efektif, menarik, dan sesuai dengan perkembangan teknologi pendidikan. Media ini memanfaatkan platform digital untuk mempermudah proses asesmen dan penilaian hasil belajar.</title>
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<!-- jsPDF untuk membuat sertifikat PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<style>
+/* =========================================================
+   RESET & VARIABEL DASAR
+   ========================================================= */
+:root{
+  --sky-top:#7EC8F2;
+  --sky-bottom:#CDEFFF;
+  --sun:#FFD93D;
+  --sun-glow:#FFF3B0;
+  --grass-1:#8FE08C;
+  --grass-2:#5FB85F;
+  --tree-leaf:#5DBE6A;
+  --tree-leaf-dark:#469450;
+  --tree-trunk:#9C6B3E;
+  --purple:#7C4DFF;
+  --purple-dark:#5C2DE0;
+  --pink:#FF6FA0;
+  --yellow:#FFC93C;
+  --green-ok:#3CCB7F;
+  --red-no:#FF6B6B;
+  --card-bg:#FFFFFFEE;
+  --text-dark:#333A4D;
+  --shadow:0 12px 30px rgba(60,40,120,.18);
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+
+html,body{
+  font-family:'Nunito', sans-serif;
+  color:var(--text-dark);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+h1,h2,h3,.brand,.btn{ font-family:'Baloo 2', cursive; }
+
+/* =========================================================
+   PANGGUNG ALAM (BACKGROUND ANIMASI)
+   ========================================================= */
+#scene{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  background:linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-bottom) 65%, var(--grass-2) 65%, var(--grass-1) 100%);
+  overflow:hidden;
+}
+
+/* Matahari */
+.sun{
+  position:absolute;
+  top:6%; left:8%;
+  width:90px; height:90px;
+  background:radial-gradient(circle, var(--sun) 55%, var(--sun-glow) 100%);
+  border-radius:50%;
+  box-shadow:0 0 60px 25px rgba(255,217,61,.55);
+  animation: pulse-sun 4s ease-in-out infinite;
+}
+@keyframes pulse-sun{
+  0%,100%{ transform:scale(1); }
+  50%{ transform:scale(1.08); }
+}
+
+/* Awan */
+.cloud{
+  position:absolute;
+  background:#fff;
+  border-radius:50px;
+  opacity:.9;
+  filter:drop-shadow(0 6px 6px rgba(0,0,0,.05));
+}
+.cloud::before, .cloud::after{
+  content:"";
+  position:absolute;
+  background:#fff;
+  border-radius:50%;
+}
+.cloud1{ width:120px; height:40px; top:10%; left:-150px; animation: drift 55s linear infinite; }
+.cloud1::before{ width:60px; height:60px; top:-25px; left:15px; }
+.cloud1::after{ width:50px; height:50px; top:-18px; left:55px; }
+
+.cloud2{ width:90px; height:32px; top:22%; left:-150px; animation: drift 75s linear infinite; animation-delay:-20s; }
+.cloud2::before{ width:45px; height:45px; top:-18px; left:10px; }
+.cloud2::after{ width:38px; height:38px; top:-14px; left:40px; }
+
+.cloud3{ width:150px; height:50px; top:6%; left:-200px; animation: drift 95s linear infinite; animation-delay:-50s; }
+.cloud3::before{ width:75px; height:75px; top:-32px; left:20px; }
+.cloud3::after{ width:60px; height:60px; top:-24px; left:70px; }
+
+@keyframes drift{
+  from{ transform:translateX(0); }
+  to{ transform:translateX(120vw); }
+}
+
+/* Burung */
+.bird{
+  position:absolute;
+  width:30px; height:14px;
+  animation-timing-function:linear;
+  animation-iteration-count:infinite;
+}
+.bird::before, .bird::after{
+  content:"";
+  position:absolute;
+  width:15px; height:15px;
+  border:3px solid var(--text-dark);
+  border-radius:50% 50% 0 0;
+  border-bottom:none;
+  top:0;
+  animation: flap .5s ease-in-out infinite alternate;
+}
+.bird::before{ left:0; transform-origin:right bottom; }
+.bird::after{ right:0; transform-origin:left bottom; transform:scaleX(-1); }
+@keyframes flap{
+  from{ transform:rotateZ(0deg); }
+  to{ transform:rotateZ(35deg); }
+}
+.bird::after{ animation-name:flap2; }
+@keyframes flap2{
+  from{ transform:scaleX(-1) rotateZ(0deg); }
+  to{ transform:scaleX(-1) rotateZ(35deg); }
+}
+.bird1{ top:14%; left:-40px; animation-name: fly; animation-duration:28s; }
+.bird2{ top:20%; left:-40px; animation-name: fly; animation-duration:34s; animation-delay:-8s; }
+.bird3{ top:10%; left:-40px; animation-name: fly; animation-duration:40s; animation-delay:-20s; }
+@keyframes fly{
+  0%{ transform:translate(0,0); }
+  50%{ transform:translate(60vw,-20px); }
+  100%{ transform:translate(130vw,10px); }
+}
+
+/* Tanah / rumput */
+.ground{
+  position:absolute;
+  bottom:0; left:0; right:0;
+  height:35%;
+  background:linear-gradient(to bottom, var(--grass-2), var(--grass-1));
+}
+.grass-blade{
+  position:absolute;
+  bottom:0;
+  width:6px; height:26px;
+  background:#4FA85A;
+  border-radius:4px 4px 0 0;
+  transform-origin:bottom center;
+  animation: sway 3.5s ease-in-out infinite;
+}
+@keyframes sway{
+  0%,100%{ transform:rotate(-6deg); }
+  50%{ transform:rotate(6deg); }
+}
+
+/* Pohon */
+.tree{
+  position:absolute;
+  bottom:8%;
+  width:70px; height:120px;
+  transform-origin:bottom center;
+  animation: sway 6s ease-in-out infinite;
+}
+.tree .trunk{
+  position:absolute;
+  bottom:0; left:50%;
+  width:14px; height:55px;
+  background:var(--tree-trunk);
+  transform:translateX(-50%);
+  border-radius:4px;
+}
+.tree .leaf{
+  position:absolute;
+  width:60px; height:60px;
+  background:var(--tree-leaf);
+  border-radius:50%;
+  left:50%;
+  transform:translateX(-50%);
+}
+.tree .leaf.l1{ bottom:40px; }
+.tree .leaf.l2{ bottom:65px; left:30%; width:45px; height:45px; background:var(--tree-leaf-dark); }
+.tree .leaf.l3{ bottom:65px; left:70%; width:45px; height:45px; background:var(--tree-leaf-dark); }
+
+.tree-small{ transform:scale(.6); }
+
+/* =========================================================
+   LAYOUT UTAMA / KARTU
+   ========================================================= */
+.wrapper{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+
+.card{
+  width:100%;
+  max-width:640px;
+  background:var(--card-bg);
+  border-radius:28px;
+  box-shadow:var(--shadow);
+  padding:32px;
+  backdrop-filter:blur(4px);
+  animation: pop-in .5s ease;
+}
+@keyframes pop-in{
+  from{ opacity:0; transform:translateY(20px) scale(.97); }
+  to{ opacity:1; transform:translateY(0) scale(1); }
+}
+
+.brand{
+  text-align:center;
+  font-size:1.9rem;
+  color:var(--purple-dark);
+  margin-bottom:4px;
+}
+.brand span{ color:var(--pink); }
+.subtitle{
+  text-align:center;
+  color:#6b7280;
+  font-weight:700;
+  margin-bottom:22px;
+}
+
+/* Layar disembunyikan */
+.screen{ display:none; }
+.screen.active{ display:block; }
+
+/* =========================================================
+   FORM AWAL
+   ========================================================= */
+.form-group{ margin-bottom:18px; }
+.form-group label{
+  display:block;
+  font-weight:800;
+  margin-bottom:6px;
+  color:var(--purple-dark);
+}
+.form-group input{
+  width:100%;
+  padding:14px 16px;
+  border:3px solid #E0E7FF;
+  border-radius:14px;
+  font-size:1rem;
+  font-family:inherit;
+  transition:.2s;
+}
+.form-group input:focus{
+  outline:none;
+  border-color:var(--purple);
+  box-shadow:0 0 0 4px rgba(124,77,255,.15);
+}
+
+.btn{
+  display:inline-block;
+  width:100%;
+  padding:14px 20px;
+  border:none;
+  border-radius:16px;
+  font-size:1.1rem;
+  font-weight:700;
+  letter-spacing:.5px;
+  color:#fff;
+  cursor:pointer;
+  transition:transform .15s, box-shadow .15s;
+  background:linear-gradient(135deg, var(--purple), var(--pink));
+  box-shadow:0 8px 18px rgba(124,77,255,.35);
+}
+.btn:hover{ transform:translateY(-2px); box-shadow:0 12px 22px rgba(124,77,255,.45); }
+.btn:active{ transform:translateY(0); }
+.btn:disabled{ opacity:.5; cursor:not-allowed; transform:none; box-shadow:none; }
+.btn.secondary{ background:linear-gradient(135deg,#FFC93C,#FF914D); box-shadow:0 8px 18px rgba(255,145,77,.35); }
+.btn.ghost{ background:#fff; color:var(--purple-dark); border:3px solid var(--purple); box-shadow:none; }
+
+.intro-art{
+  display:block;
+  margin:0 auto 18px;
+  font-size:64px;
+  text-align:center;
+}
+
+/* =========================================================
+   LAYAR KUIS
+   ========================================================= */
+.quiz-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:14px;
+  font-weight:800;
+  color:var(--purple-dark);
+}
+.quiz-header .score-pill{
+  background:linear-gradient(135deg,var(--green-ok),#8FE9B0);
+  color:#fff;
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:.95rem;
+}
+
+.progress-bar{
+  width:100%;
+  height:14px;
+  background:#E7E9F5;
+  border-radius:999px;
+  overflow:hidden;
+  margin-bottom:18px;
+}
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  border-radius:999px;
+  transition:width .4s ease;
+}
+
+.q-type-badge{
+  display:inline-block;
+  padding:4px 12px;
+  border-radius:999px;
+  font-size:.8rem;
+  font-weight:800;
+  color:#fff;
+  margin-bottom:10px;
+}
+.badge-pg{ background:var(--purple); }
+.badge-isian{ background:var(--pink); }
+.badge-uraian{ background:#FF914D; }
+
+.q-text{
+  font-size:1.08rem;
+  font-weight:700;
+  margin-bottom:16px;
+  line-height:1.5;
+}
+
+.options{ display:flex; flex-direction:column; gap:10px; margin-bottom:16px; }
+.option{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 14px;
+  border:3px solid #E0E7FF;
+  border-radius:14px;
+  cursor:pointer;
+  font-weight:700;
+  transition:.15s;
+}
+.option:hover{ border-color:var(--purple); background:#F5F1FF; }
+.option.selected{ border-color:var(--purple); background:#EFE8FF; }
+.option input{ accent-color:var(--purple); width:18px; height:18px; }
+
+.option.correct-answer{ border-color:var(--green-ok); background:#E9FBF1; }
+.option.wrong-answer{ border-color:var(--red-no); background:#FFEAEA; }
+
+textarea, .text-answer{
+  width:100%;
+  padding:12px 14px;
+  border:3px solid #E0E7FF;
+  border-radius:14px;
+  font-family:inherit;
+  font-size:1rem;
+  resize:vertical;
+  min-height:48px;
+  margin-bottom:16px;
+}
+textarea:focus, .text-answer:focus{
+  outline:none; border-color:var(--purple);
+  box-shadow:0 0 0 4px rgba(124,77,255,.15);
+}
+
+.feedback{
+  border-radius:16px;
+  padding:16px;
+  margin-top:6px;
+  margin-bottom:16px;
+  animation: pop-in .35s ease;
+}
+.feedback.benar{ background:#E9FBF1; border:3px solid var(--green-ok); }
+.feedback.salah{ background:#FFEAEA; border:3px solid var(--red-no); }
+.feedback h4{ margin-bottom:6px; font-family:'Baloo 2',cursive; }
+.feedback .fb-row{ margin:4px 0; font-size:.95rem; }
+.feedback .fb-label{ font-weight:800; }
+
+.quiz-actions{ display:flex; gap:10px; }
+.quiz-actions .btn{ flex:1; }
+
+/* =========================================================
+   LAYAR HASIL
+   ========================================================= */
+.result-title{
+  text-align:center;
+  font-size:1.6rem;
+  color:var(--purple-dark);
+  margin-bottom:6px;
+}
+.result-sub{ text-align:center; color:#6b7280; font-weight:700; margin-bottom:18px; }
+
+.result-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:18px;
+}
+.result-box{
+  background:#F5F1FF;
+  border-radius:16px;
+  padding:14px;
+  text-align:center;
+}
+.result-box .val{ font-size:1.6rem; font-weight:800; color:var(--purple-dark); font-family:'Baloo 2',cursive; }
+.result-box .lab{ font-size:.85rem; font-weight:700; color:#6b7280; }
+
+.predikat-badge{
+  display:block;
+  width:90px; height:90px;
+  line-height:90px;
+  margin:0 auto 16px;
+  text-align:center;
+  border-radius:50%;
+  font-size:2.4rem;
+  font-weight:800;
+  font-family:'Baloo 2',cursive;
+  color:#fff;
+  background:linear-gradient(135deg,var(--purple),var(--pink));
+  box-shadow:0 10px 24px rgba(124,77,255,.35);
+}
+
+.congrats{
+  text-align:center;
+  font-weight:800;
+  color:var(--green-ok);
+  font-size:1.1rem;
+  margin-bottom:14px;
+  animation: bounce 1s infinite;
+}
+@keyframes bounce{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-8px); }
+}
+
+.result-actions{ display:flex; flex-direction:column; gap:10px; margin-top:6px; }
+
+/* Konfeti */
+.confetti{
+  position:fixed;
+  top:-10px;
+  width:10px; height:16px;
+  opacity:.9;
+  z-index:999;
+  animation: fall linear forwards;
+}
+@keyframes fall{
+  to{ transform:translateY(110vh) rotate(540deg); opacity:.2; }
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width:480px){
+  .card{ padding:22px 18px; border-radius:20px; }
+  .brand{ font-size:1.5rem; }
+  .result-grid{ grid-template-columns:1fr; }
+  .quiz-actions{ flex-direction:column; }
+}
+
+/* Sembunyikan area cetak / sertifikat dari tampilan normal */
+#print-area{ display:none; }
+
+/* Mode cetak hasil */
+@media print{
+  #scene, .no-print{ display:none !important; }
+  body{ background:#fff; }
+  .card{ box-shadow:none; }
+}
+</style>
+</head>
+<body>
+
+<!-- =================== PANGGUNG ALAM (DEKORASI) =================== -->
+<div id="scene" aria-hidden="true">
+  <div class="sun"></div>
+  <div class="cloud cloud1"></div>
+  <div class="cloud cloud2"></div>
+  <div class="cloud cloud3"></div>
+  <div class="bird bird1"></div>
+  <div class="bird bird2"></div>
+  <div class="bird bird3"></div>
+  <div class="ground"></div>
+  <!-- Pohon-pohon -->
+  <div class="tree" style="left:4%;">
+    <div class="leaf l2"></div><div class="leaf l3"></div><div class="leaf l1"></div><div class="trunk"></div>
+  </div>
+  <div class="tree tree-small" style="left:84%; animation-delay:-2s;">
+    <div class="leaf l2"></div><div class="leaf l3"></div><div class="leaf l1"></div><div class="trunk"></div>
+  </div>
+  <div class="tree tree-small" style="left:92%; bottom:4%; animation-delay:-4s;">
+    <div class="leaf l2"></div><div class="leaf l3"></div><div class="leaf l1"></div><div class="trunk"></div>
+  </div>
+  <!-- Rumput akan ditambahkan otomatis lewat JavaScript -->
+  <div id="grass-container"></div>
+</div>
+
+<!-- =================== APLIKASI =================== -->
+<div class="wrapper">
+  <div class="card">
+
+    <div class="brand">🚀 Evaluasi <span>Materi Rasio</span></div>
+
+<div class="subtitle">
+  Evaluasi Materi Rasio Kelas VII Berbasis Digital merupakan media penilaian yang dirancang untuk mengukur pemahaman peserta didik sekaligus mendukung pelaksanaan evaluasi pembelajaran yang lebih efektif, menarik, dan sesuai dengan perkembangan teknologi pendidikan. Media ini memanfaatkan platform digital untuk mempermudah proses asesmen dan penilaian hasil belajar.
+</div>
+
+<!-- ===== LAYAR 1: HALAMAN AWAL ===== -->
+<section class="screen active" id="screen-start">
+
+  <!-- PETUNJUK PENGGUNAAN -->
+  <div style="
+    background:#f8f9ff;
+    border:2px solid #dbe4ff;
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:20px;
+    line-height:1.8;
+  ">
+    <h3 style="
+      color:#5C2DE0;
+      text-align:center;
+      margin-bottom:12px;
+    ">
+      Petunjuk Penggunaan
+    </h3>
+
+    <ol style="
+      padding-left:20px;
+      color:#444;
+      font-size:0.95rem;
+    ">
+      <li>Isilah identitas peserta didik pada kolom Nama Lengkap dan Kelas yang tersedia.</li>
+
+      <li>Klik tombol <b>Mulai Kuis</b> untuk memulai pengerjaan asesmen.</li>
+
+      <li>Jawablah setiap soal sesuai dengan jenis soal yang diberikan, yaitu pilihan ganda, isian singkat, dan uraian.</li>
+
+      <li>Setelah menjawab setiap soal, klik tombol <b>Periksa Jawaban</b> untuk melihat hasil pemeriksaan, skor yang diperoleh, serta pembahasan soal.</li>
+
+      <li>Klik tombol <b>Lanjut</b> untuk berpindah ke soal berikutnya hingga seluruh soal selesai dikerjakan.</li>
+
+      <li>Setelah seluruh soal selesai, sistem akan menampilkan jumlah jawaban benar, jumlah jawaban salah, skor akhir, persentase nilai, dan predikat yang diperoleh.</li>
+
+      <li>Setelah kuis selesai, hasil pengerjaan akan tersimpan secara otomatis ke dalam sistem sehingga dapat dilihat oleh guru atau pengelola website.</li>
+
+      <li>Peserta juga dapat mengunduh sertifikat sebagai bentuk apresiasi atas partisipasi dalam menyelesaikan asesmen digital.</li>
+    </ol>
+  </div>
+
+  <div class="intro-art">🧮🌻🐦</div>
+
+  <div class="form-group">
+    <label for="inputNama">Nama Lengkap</label>
+    <input type="text" id="inputNama" placeholder="Tulis nama lengkapmu..." autocomplete="off">
+  </div>
+
+  <div class="form-group">
+    <label for="inputKelas">Kelas</label>
+    <input type="text" id="inputKelas" placeholder="Contoh: 7A" autocomplete="off">
+  </div>
+
+  <button class="btn" id="btnMulai">Mulai Kuis</button>
+
+  <p style="text-align:center;margin-top:14px;font-size:.85rem;color:#6b7280;">
+    Terdiri dari 15 soal: 10 pilihan ganda, 3 isian singkat, dan 2 uraian. Total skor maksimal 100.
+  </p>
+
+</section>
+
+    <!-- ===== LAYAR 2: KUIS ===== -->
+    <section class="screen" id="screen-quiz">
+      <div class="quiz-header">
+        <div id="quizNamaSiswa">Nama: -</div>
+        <div class="score-pill">⭐ Skor: <span id="skorSementara">0</span> / 100</div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div style="font-weight:800; color:#6b7280; margin-bottom:10px;" id="soalCounter">Soal 1 dari 15</div>
+
+      <span class="q-type-badge" id="qTypeBadge">Pilihan Ganda</span>
+      <div class="q-text" id="qText">Pertanyaan...</div>
+
+      <div id="answerArea"></div>
+
+      <div id="feedbackArea"></div>
+
+      <div class="quiz-actions">
+        <button class="btn" id="btnPeriksa"> Periksa Jawaban</button>
+        <button class="btn secondary" id="btnLanjut" style="display:none;">➡️ Lanjut</button>
+      </div>
+    </section>
+
+    <!-- ===== LAYAR 3: HASIL ===== -->
+    <section class="screen" id="screen-result">
+      <div class="result-title">🎉 Hasil Kuis Kamu</div>
+      <div class="result-sub" id="resultNamaKelas">Nama (Kelas)</div>
+
+      <div class="predikat-badge" id="predikatBadge">A</div>
+      <div class="congrats" id="congratsMsg" style="display:none;">🎊 Selamat! Kamu Hebat! 🎊</div>
+
+      <div class="result-grid">
+        <div class="result-box"><div class="val" id="resBenar">0</div><div class="lab">Jawaban Benar</div></div>
+        <div class="result-box"><div class="val" id="resSalah">0</div><div class="lab">Jawaban Salah</div></div>
+        <div class="result-box"><div class="val" id="resSkor">0</div><div class="lab">Total Skor (0-100)</div></div>
+        <div class="result-box"><div class="val" id="resPersen">0%</div><div class="lab">Persentase Nilai</div></div>
+      </div>
+
+<div class="result-actions">
+
+  <button class="btn secondary" id="btnCetak">
+    Cetak Hasil
+  </button>
+
+  <button
+class="btn ghost"
+onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSeEn4xfaUP_uQqW5dSYn2iXectdByGfBKiLtFXn4XH1XVgZCg/viewform','_blank')">
+Angket Respon Pengguna
+</button>
+
+  <button class="btn ghost" id="btnSertifikat">
+    Unduh Sertifikat PDF
+  </button>
+
+</div>
+    </section>
+
+  </div>
+</div>
+
+<!-- Area khusus untuk dicetak (hasil rapi) -->
+<div id="print-area"></div>
+
+<script>
+/* =========================================================
+   1. RUMPUT OTOMATIS (DEKORASI)
+   ========================================================= */
+const grassContainer = document.getElementById('grass-container');
+for(let i=0;i<40;i++){
+  const blade = document.createElement('div');
+  blade.className = 'grass-blade';
+  blade.style.left = (Math.random()*100) + '%';
+  blade.style.height = (16 + Math.random()*18) + 'px';
+  blade.style.animationDuration = (2.5 + Math.random()*2) + 's';
+  blade.style.animationDelay = (Math.random()*2) + 's';
+  grassContainer.appendChild(blade);
+}
+
+/* =========================================================
+   2. URL GOOGLE APPS SCRIPT (GANTI DENGAN URL WEB APP KAMU)
+   Lihat petunjuk lengkap di file "apps_script.gs" yang disertakan.
+   ========================================================= */
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwaPbfaD3Ohgpg0aPb2Cjqt1zi6-ZoR6c62M9-HFdjaFlXv6iFthoJ5yqRu2BJmd1Fr/exec";
+
+/* =========================================================
+   3. BANK SOAL (15 SOAL)
+   type: 'pg' | 'isian' | 'uraian'
+   score: bobot poin soal
+   answer: untuk pg -> index opsi yang benar (0-based)
+           untuk isian -> array jawaban yang diterima (string, akan dinormalisasi)
+           untuk uraian -> array kata kunci penting yang dicek untuk penilaian otomatis
+   explanation: pembahasan lengkap
+   ========================================================= */
+const questions = [
+  // ---------- 10 SOAL PILIHAN GANDA (4 poin) ----------
+  {
+    type:'pg', score:4,
+    text:"1. Seorang karyawan akan mengemas roti dalam 240 kardus. Jika jumlah kardus roti adalah 3/5 kali jumlah kardus sosis. Maka jumlah roti adalah.....",
+    options:["120","90","150","85"],
+    answer:1,
+    explanation:"Roti : sosis = 3 : 5 Misalkan roti = 3x dan sosis = 5x; 3x + 5x = 240; 8x = 240  x = 30; Roti = 3x = 3 × 30 = 90. Jadi, jumlah kardus roti adalah 90"
+  },
+  {
+    type:'pg', score:4,
+    text:"2. Pada acara pensi sekolah, panitia menyediakan 72 kursi untuk siswa dan 48 kursi untuk tamu undangan. Ketua panitia ingin mengetahui perbandingan jumlah kursi siswa terhadap kursi tamu agar penataan aula lebih mudah dilakukan. Perbandingan kursi siswa terhadap kursi tamu adalah ....",
+    options:["6:7","3:2","5:2","1:3"],
+    answer:1,
+    explanation:"72:48 = (72÷24):(48÷24) = 3:2. Artinya, setiap 3 kursi siswa terdapat 2 kursi tamu."
+  },
+  {
+    type:'pg', score:4,
+    text:"3. Seorang YouTuber edukasi membuat konten matematika dan sains. Dalam satu bulan, video matematika mendapat 2.400 penonton sedangkan video sains mendapat 1.600 penonton. Setelah videonya viral, jumlah penonton video matematika bertambah 1.200 penonton. Rasio penonton video matematika terhadap video sains sekarang adalah ....",
+    options:["5:7","4:5"," 3:2","9:4"],
+    answer:3,
+    explanation:"Penonton matematika baru = 2.400 + 1.200 = 3.600. Rasio matematika : sains = 3.600 : 1.600. Sederhanakan dengan membagi 400 = 9 : 4"
+  },
+  {
+    type:'pg', score:4,
+    text:"4. Sebuah kafe dekat sekolah melakukan survei menu favorit pelajar. Dari 150 pengunjung, 90 orang membeli minuman boba dan sisanya membeli kopi susu. Pemilik kafe mengatakan bahwa minuman boba jauh lebih diminati karena rasionya lebih besar dibanding kopi susu. Rasio pembeli minuman boba terhadap kopi susu adalah ....",
+    options:["3:2","6:7","2:1","5:2"],
+    answer:0,
+    explanation:"Jumlah pembeli kopi susu = 150 − 90 = 60 orang Rasio boba : kopi susu = 90 : 60 Sederhanakan dengan membagi 30: = 3 : 2"
+  },
+  {
+    type:'pg', score:4,
+    text:"5. Dalam suatu rapat terdiri dari 45 anggota yang saling berjabat tangan satu sama lain. Jumlah jabat tangan dalam rapat tersebut adalah …",
+    options:["1.008","990","768","962"],
+    answer:1,
+    explanation:"n = 45. Gunakan rumus: n(n − 1) / 2 = 45 × 44 / 2 = 45 × 22 = 990. Jadi, jawaban yang benar adalah 990"
+  },
+  {
+    type:'pg', score:4,
+    text:"6. Untuk membangun jalan tol sepanjang 90 km diperlukan aspal sebanyak 54 drum. Jumalah aspal yang diperlukan untuk membangun jalan tol sepanjang 75 km adalah ….",
+    options:["60","55","45","58"],
+    answer:2,
+    explanation:"90 km : 54 drum = 75 km : x x / 54 = 75 / 90; 75/90 = 5/6; x = 54 × 5/6 x = 9 × 5 x = 45. Jadi, jumlah aspal adalah 45 drum."
+  },
+  {
+    type:'pg', score:4,
+    text:"7. Dio dan Beni mengoleksi pistol mainan. Perbandingan jumlah pistol mainan keduanya adalah 4:7. Jika selisih pistol mainan mereka adalah 9 maka berapakah jumlah pistol mainan keduanya?",
+    options:["33","44","55","66"],
+    answer:0,
+    explanation:"Dio = 4x, Beni = 7x Selisih = 7x − 4x = 3x 3x = 9 → x = 3. Jumlah = 4x + 7x = 11x = 11 × 3 = 33. Jadi, jumlah pistol mainan mereka adalah 33"
+  },
+  {
+    type:'pg', score:4,
+    text:"8. Sekarang umur Winda adalah 3 kali umur Windi. Sedangkan 5 tahun yang lalu, umur Winda adalah 4 kali umur Windi. Selisih umur keduanya adalah …",
+    options:["30","16","17","20"],
+    answer:0,
+    explanation:"Misal Windi = x, Winda = 3x; 5 tahun lalu: 3x − 5 = 4(x − 5); 3x − 5 = 4x − 20 15 = x. Selisih umur: 3x − x = 2x = 2 × 15 = 30. Jadi, selisih umur yang benar adalah 30"
+  },
+  {
+    type:'pg', score:4,
+    text:"9. Perbandingan uang yang dimiliki Kania, Lulu dan Naurah adalah 2:3:7. Jumlah uang Kania dan Naurah Rp315.000,00. Jumlah uang mereka bertiga adalah...",
+    options:["Rp70.000,00","Rp105.000,00","Rp350.000,00","Rp420.000,00"],
+    answer:3,
+    explanation:"Kania = 2x, Lulu = 3x, Naurah = 7x 2x + 7x = 315.000 → 9x = 315.000 → x = 35.000. Jumlah total = 12x = 12 × 35.000 = 420.000. Jadi, jumlah uang mereka bertiga adalah Rp 420.000,00."
+  },
+  {
+    type:'pg', score:4,
+    text:"10. Sebuah peta mempunyai skala 1:1.500.000. Pada peta tersebut jarak: Kota A ke kota P = 3 cm; Kota P ke kota B = 2 cm; Kota A ke kota Q = 2 cm; Kota Q ke kota B = 2,5 cm. Haikal berkendaraan dari kota A ke kota B melalui kota P dan Mondi berkendaraan dari kota A ke kota B melului kota Q. Berapakah selisih jarak tempuh yang dilakukan Haikal dan Mondi?",
+    options:["4,5 km","5 km","7,5 km","8 km"],
+    answer:2,
+    explanation:"1 cm = 15 km. Haikal: AP + PB = 3 + 2 = 5 cm; 5 × 15 = 75 km. Mondi: AQ + QB = 2 + 2,5 = 4,5 cm; 4,5 × 15 = 67,5 km. Selisih: 75 − 67,5 = 7,5 km. Jadi, selisih jarak tempuh adalah 7,5 km"
+  },
+
+  // ---------- 3 SOAL ISIAN SINGKAT (10 poin) ----------
+  {
+    type:'isian', score:10,
+    text:"11. Pak Yahya dan Pak Anton masing-masing membeli sebungkus makanan ikan dengan merk sama namun berat berbeda. Kemasan yang dibeli Pak Yahya tertulis berat 1.200 gram dan kemasan yang dibeli Pak Anton tertulis berat 1,5 kg. Perbandingan berat pakan ikan Pak Yahya dan Pak Anton adalah...",
+    answer:["4:5","4 : 5","4 banding 5"],
+    explanation:"Pak Yahya = 1.200 gram Pak Anton = 1,5 kg = 1.500 gram. Perbandingan: 1.200 : 1.500. Sederhanakan dengan membagi 300: = 4 : 5"
+  },
+  {
+    type:'isian', score:10,
+    text:"12. Pak Ujang dapat membuat sebuah taman dalam waktu 60 hari, sedangkan pak Deni dalam waktu 90 hari. Jika pak Ujang dan pak Deni bekerja bersama-sama, mereka dapat menyelesaikan taman tersebut dalam waktu...",
+    answer:["36 hari","36"],
+    explanation:"Pak Ujang = 60 hari Pak Deni = 90 hari; Perbandingan kerja (1/60)+(1/90) = (3/180)+(2/180) = 5/180 = 1/36. Jadi, waktu yang diperlukan bersama adalah 36 hari."
+  },
+  {
+    type:'isian', score:10,
+    text:"13. Sebuah mobil memerlukan 5 liter bensin untuk menempuh jarak 60 km, jika mobil itu menghabiskan 40 liter bensin, jarak yang yang ditempuh ... km",
+    answer:["480"],
+    explanation:"5 liter bensin → 60 km; 40 liter bensin → x km. Gunakan perbandingan senilai 5/40 = 60/x; x= (40×60)/5; x = 480. Jadi, jarak yang dapat ditempuh mobil tersebut adalah 480 km"
+  },
+
+  // ---------- 2 SOAL URAIAN (15 poin) ----------
+  {
+    type:'uraian', score:15,
+    text:"14. Komodo merupakan hewan yang hanya terdapat di indonesia khususnya di sebelah timur Pulau Flores. Komodo termasuk hewan yang dilestarikan agar tidak punah. Komodo dewasa dapat berjalan sejauh 11,2 km per hari sedangkan anak komodo berjalan 2000 m per hari. Tentukan rasio jarak tempuh komodo dewasa terhadap anak komodo.",
+    keywords:["28:5","28 : 5","28 banding 5"],
+    explanation:"Jarak tempuh komodo dewasa = 11,2 km = 11.200 m; Jarak tempuh anak komodo = 2.000 m. Rasio jarak tempuh komodo dewasa terhadap anak komodo 11.200:2.000 Sederhanakan dengan membagi keduanya dengan 400 = 28:5. Jadi, rasio jarak tempuh komodo dewasa terhadap anak komodo adalah 28:5."
+  },
+  {
+    type:'uraian', score:15,
+    text:"15. Dalam sebuah perpustakaan sekolah, terdapat buku fiksi dan nonfiksi dengan perbandingan 5 : 7. Setelah program literasi, 20 buku fiksi ditambahkan dan 10 buku nonfiksi dipinjam keluar. Analisis apakah rasio berubah atau tetap, dan hitung rasio akhirnya. Jelaskan langkahnya!",
+    keywords:["Rasio berubah menjadi 7:6","berubah menjadi 7:6"],
+    explanation:"Diketahui perbandingan buku fiksi dan nonfiksi = 5 : 7. Misalkan jumlah buku awal 50 dan 70. Setelah program literasi, Buku fiksi: 50+20=70; Buku nonfiksi 70−10=60. Rasio akhir 70:60=7:6. Kesimpulan: Rasio berubah dari 5 : 7 menjadi 7 : 6 karena buku fiksi bertambah dan buku nonfiksi berkurang."
+  },
+ 
+];
+
+/* =========================================================
+   4. STATE / VARIABEL GLOBAL
+   ========================================================= */
+let currentIndex = 0;
+let totalScore = 0;
+let correctCount = 0;
+let studentName = "";
+let studentClass = "";
+let perQuestionResult = []; // menyimpan { benar: true/false, skor: number }
+let alreadyChecked = false;
+
+/* =========================================================
+   5. ELEMEN DOM
+   ========================================================= */
+const screenStart  = document.getElementById('screen-start');
+const screenQuiz   = document.getElementById('screen-quiz');
+const screenResult = document.getElementById('screen-result');
+
+const inputNama  = document.getElementById('inputNama');
+const inputKelas = document.getElementById('inputKelas');
+const btnMulai   = document.getElementById('btnMulai');
+
+const quizNamaSiswa = document.getElementById('quizNamaSiswa');
+const skorSementara = document.getElementById('skorSementara');
+const progressFill  = document.getElementById('progressFill');
+const soalCounter   = document.getElementById('soalCounter');
+const qTypeBadge    = document.getElementById('qTypeBadge');
+const qText         = document.getElementById('qText');
+const answerArea    = document.getElementById('answerArea');
+const feedbackArea  = document.getElementById('feedbackArea');
+const btnPeriksa    = document.getElementById('btnPeriksa');
+const btnLanjut     = document.getElementById('btnLanjut');
+
+/* =========================================================
+   6. NAVIGASI ANTAR LAYAR
+   ========================================================= */
+function showScreen(screen){
+  [screenStart, screenQuiz, screenResult].forEach(s => s.classList.remove('active'));
+  screen.classList.add('active');
+}
+
+/* =========================================================
+   7. MULAI KUIS
+   ========================================================= */
+btnMulai.addEventListener('click', () => {
+  const nama  = inputNama.value.trim();
+  const kelas = inputKelas.value.trim();
+
+  if(nama === "" || kelas === ""){
+    alert("Mohon isi Nama Lengkap dan Kelas terlebih dahulu ya! 😊");
+    return;
+  }
+
+  studentName = nama;
+  studentClass = kelas;
+  currentIndex = 0;
+  totalScore = 0;
+  correctCount = 0;
+  perQuestionResult = [];
+
+  quizNamaSiswa.textContent = "Nama: " + studentName;
+  showScreen(screenQuiz);
+  renderQuestion();
+});
+
+/* =========================================================
+   9. MENAMPILKAN SOAL
+   ========================================================= */
+function normalizeAnswer(str){
+  return String(str)
+    .toLowerCase()
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+function containsCorrectAnswer(studentAnswer, answerKeys){
+
+  if(!Array.isArray(answerKeys)) return false;
+
+  const jawabanSiswa = normalizeAnswer(studentAnswer);
+
+  return answerKeys.some(key => {
+    const kunci = normalizeAnswer(key);
+
+    return (
+      jawabanSiswa === kunci ||
+      jawabanSiswa.includes(kunci)
+    );
+  });
+}
+   function renderQuestion(){
+  alreadyChecked = false;
+  const q = questions[currentIndex];
+
+  // Update header & progress
+  soalCounter.textContent = `Soal ${currentIndex + 1} dari ${questions.length}`;
+  progressFill.style.width = ((currentIndex) / questions.length * 100) + '%';
+  skorSementara.textContent = totalScore;
+
+  // Badge jenis soal
+  if(q.type === 'pg'){
+    qTypeBadge.textContent = "Pilihan Ganda • " + q.score + " poin";
+    qTypeBadge.className = "q-type-badge badge-pg";
+  }else if(q.type === 'isian'){
+    qTypeBadge.textContent = "Isian Singkat • " + q.score + " poin";
+    qTypeBadge.className = "q-type-badge badge-isian";
+  }else{
+    qTypeBadge.textContent = "Uraian • " + q.score + " poin";
+    qTypeBadge.className = "q-type-badge badge-uraian";
+  }
+
+  qText.textContent = q.text;
+
+  // Bangun area jawaban sesuai jenis soal
+  answerArea.innerHTML = "";
+  if(q.type === 'pg'){
+    const optWrap = document.createElement('div');
+    optWrap.className = 'options';
+    q.options.forEach((opt, idx) => {
+      const label = document.createElement('label');
+      label.className = 'option';
+      label.innerHTML = `<input type="radio" name="pgOption" value="${idx}"> <span>${String.fromCharCode(65+idx)}. ${opt}</span>`;
+      label.addEventListener('click', () => {
+        document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+        label.classList.add('selected');
+      });
+      optWrap.appendChild(label);
+    });
+    answerArea.appendChild(optWrap);
+  }else if(q.type === 'isian'){
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'text-answer';
+    input.id = 'isianInput';
+    input.placeholder = 'Tulis jawabanmu di sini...';
+    answerArea.appendChild(input);
+  }else{ // uraian
+    const textarea = document.createElement('textarea');
+    textarea.id = 'uraianInput';
+    textarea.rows = 4;
+    textarea.placeholder = 'Tulis jawaban dan penjelasanmu di sini...';
+    answerArea.appendChild(textarea);
+  }
+
+  // Reset tampilan feedback & tombol
+  feedbackArea.innerHTML = "";
+  btnPeriksa.style.display = "block";
+  btnPeriksa.disabled = false;
+  btnLanjut.style.display = "none";
+  btnLanjut.textContent = (currentIndex === questions.length - 1) ? "Lihat Hasil" : "➡️ Lanjut ke Soal Berikutnya";
+}
+
+/* =========================================================
+   10. PERIKSA JAWABAN
+   ========================================================= */
+btnPeriksa.addEventListener('click', () => {
+  if(alreadyChecked) return;
+  const q = questions[currentIndex];
+  let isCorrect = false;
+  let scoreObtained = 0;
+  let userAnswerText = "";
+  let correctAnswerText = "";
+
+  if(q.type === 'pg'){
+    const selected = document.querySelector('input[name="pgOption"]:checked');
+    if(!selected){
+      alert("Silakan pilih salah satu jawaban terlebih dahulu ya! 😊");
+      return;
+    }
+    const selectedIdx = parseInt(selected.value);
+    isCorrect = (selectedIdx === q.answer);
+    scoreObtained = isCorrect ? q.score : 0;
+    userAnswerText = String.fromCharCode(65+selectedIdx) + ". " + q.options[selectedIdx];
+    correctAnswerText = String.fromCharCode(65+q.answer) + ". " + q.options[q.answer];
+
+    // Tandai opsi benar / salah secara visual
+    document.querySelectorAll('.option').forEach((opt, idx) => {
+      opt.style.pointerEvents = 'none';
+      if(idx === q.answer) opt.classList.add('correct-answer');
+      else if(idx === selectedIdx && !isCorrect) opt.classList.add('wrong-answer');
+    });
+
+ }else if(q.type === 'isian'){
+  const val = document.getElementById('isianInput').value.trim();
+
+  if(val === ""){
+    alert("Silakan isi jawabanmu terlebih dahulu ya! 😊");
+    return;
+  }
+
+  isCorrect = containsCorrectAnswer(val, q.answer);
+
+  scoreObtained = isCorrect ? q.score : 0;
+  userAnswerText = val;
+  correctAnswerText = q.answer[0];
+
+  document.getElementById('isianInput').disabled = true;
+  }else{ // uraian -> penilaian otomatis berbasis kata kunci
+    const val = document.getElementById('uraianInput').value.trim();
+    if(val === ""){
+      alert("Silakan tulis jawabanmu terlebih dahulu ya! ");
+      return;
+    }
+  isCorrect = containsCorrectAnswer(val, q.keywords);
+
+if(isCorrect){
+  scoreObtained = q.score;
+}else{
+  scoreObtained = Math.round(q.score / 2);
+}
+    userAnswerText = val;
+    correctAnswerText = "(Lihat pembahasan di bawah)";
+    document.getElementById('uraianInput').disabled = true;
+  }
+
+  // Simpan hasil & update skor total
+  totalScore += scoreObtained;
+  if(isCorrect) correctCount++;
+  perQuestionResult.push({ benar:isCorrect, skor:scoreObtained });
+  skorSementara.textContent = totalScore;
+
+  // Tampilkan feedback
+  const fb = document.createElement('div');
+  fb.className = 'feedback ' + (isCorrect ? 'benar' : 'salah');
+  fb.innerHTML = `
+    <h4>${isCorrect ? '✅ Jawaban Benar!' : '❌ Jawaban Belum Tepat'}</h4>
+    ${q.type !== 'uraian' ? `<div class="fb-row"><span class="fb-label">Jawaban yang benar:</span> ${correctAnswerText}</div>` : ''}
+    <div class="fb-row"><span class="fb-label">Skor untuk soal ini:</span> ${scoreObtained} / ${q.score} poin</div>
+    <div class="fb-row"><span class="fb-label">Pembahasan:</span><br>${q.explanation}</div>
+    ${q.type === 'uraian' && !isCorrect ? '<div class="fb-row" style="font-style:italic;color:#6b7280;">*Jawaban uraianmu akan ditinjau ulang oleh guru untuk penilaian akhir.</div>' : ''}
+  `;
+  feedbackArea.innerHTML = "";
+  feedbackArea.appendChild(fb);
+
+  // Atasi tombol
+  alreadyChecked = true;
+  btnPeriksa.style.display = "none";
+  btnLanjut.style.display = "block";
+
+  // Update progress bar (selesai soal ini)
+  progressFill.style.width = ((currentIndex + 1) / questions.length * 100) + '%';
+});
+
+/* =========================================================
+   11. LANJUT KE SOAL BERIKUTNYA / SELESAI
+   ========================================================= */
+btnLanjut.addEventListener('click', () => {
+  currentIndex++;
+  if(currentIndex < questions.length){
+    renderQuestion();
+  }else{
+    finishQuiz();
+  }
+});
+
+/* =========================================================
+   12. SELESAI KUIS -> TAMPILKAN HASIL
+   ========================================================= */
+function finishQuiz(){
+  const wrongCount = questions.length - correctCount;
+  const percentage = totalScore; // karena total skor maksimum = 100
+
+  let predikat = "D";
+  if(totalScore >= 90) predikat = "A";
+  else if(totalScore >= 80) predikat = "B";
+  else if(totalScore >= 70) predikat = "C";
+  else predikat = "D";
+
+  document.getElementById('resultNamaKelas').textContent = `${studentName} (Kelas ${studentClass})`;
+  document.getElementById('resBenar').textContent = correctCount;
+  document.getElementById('resSalah').textContent = wrongCount;
+  document.getElementById('resSkor').textContent = totalScore;
+  document.getElementById('resPersen').textContent = percentage + "%";
+  document.getElementById('predikatBadge').textContent = predikat;
+
+  const congrats = document.getElementById('congratsMsg');
+  if(totalScore >= 70){
+    congrats.style.display = "block";
+    launchConfetti();
+  }else{
+    congrats.style.display = "none";
+  }
+
+  showScreen(screenResult);
+
+  // Kirim data ke Google Sheets
+  sendResultToGoogleSheets({
+    nama: studentName,
+    kelas: studentClass,
+    benar: correctCount,
+    salah: wrongCount,
+    skor: totalScore,
+    persen: percentage,
+    predikat: predikat
+  });
+}
+
+/* =========================================================
+   13. ANIMASI KONFETI (UCAPAN SELAMAT)
+   ========================================================= */
+function launchConfetti(){
+  const colors = ['#7C4DFF','#FF6FA0','#FFC93C','#3CCB7F','#7EC8F2'];
+  for(let i=0;i<60;i++){
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random()*100 + 'vw';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDuration = (2.5 + Math.random()*2) + 's';
+    c.style.animationDelay = (Math.random()*1.5) + 's';
+    c.style.borderRadius = Math.random() > .5 ? '50%' : '2px';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 6000);
+  }
+}
+
+/* =========================================================
+   14. CETAK HASIL
+   ========================================================= */
+document.getElementById('btnCetak').addEventListener('click', () => {
+  const predikat = document.getElementById('predikatBadge').textContent;
+  const printArea = document.getElementById('print-area');
+  printArea.innerHTML = `
+    <div style="font-family:'Nunito',sans-serif; padding:40px;">
+      <h1 style="font-family:'Baloo 2',cursive;color:#5C2DE0;">Hasil Kuis Rasio (Perbandingan)</h1>
+      <p><b>Nama:</b> ${studentName}</p>
+      <p><b>Kelas:</b> ${studentClass}</p>
+      <p><b>Jumlah Jawaban Benar:</b> ${correctCount} dari ${questions.length}</p>
+      <p><b>Jumlah Jawaban Salah:</b> ${questions.length - correctCount}</p>
+      <p><b>Total Skor:</b> ${totalScore} / 100</p>
+      <p><b>Persentase Nilai:</b> ${totalScore}%</p>
+      <p><b>Predikat:</b> ${predikat}</p>
+      <p style="margin-top:30px;color:#999;">Dicetak pada ${new Date().toLocaleString('id-ID')}</p>
+    </div>
+  `;
+  window.print();
+});
+
+/* =========================================================
+   15. UNDUH SERTIFIKAT PDF (menggunakan jsPDF)
+   ========================================================= */
+document.getElementById('btnSertifikat').addEventListener('click', () => {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+  const predikat = document.getElementById('predikatBadge').textContent;
+
+  // Bingkai dekoratif
+  doc.setDrawColor(124,77,255);
+  doc.setLineWidth(2);
+  doc.rect(8, 8, 281, 194);
+  doc.setLineWidth(0.5);
+  doc.rect(12, 12, 273, 186);
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(28);
+  doc.setTextColor(92,45,224);
+  doc.text("SERTIFIKAT PENGHARGAAN", 148.5, 40, { align:'center' });
+
+  doc.setFontSize(14);
+  doc.setTextColor(80,80,80);
+  doc.setFont('helvetica','normal');
+  doc.text("Diberikan kepada atas keikutsertaan dalam", 148.5, 55, { align:'center' });
+  doc.text("Kuis Interaktif Rasio (Perbandingan) - Jelajah Statistika", 148.5, 63, { align:'center' });
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(30);
+  doc.setTextColor(255,111,160);
+  doc.text(studentName, 148.5, 85, { align:'center' });
+
+  doc.setFontSize(14);
+  doc.setTextColor(80,80,80);
+  doc.setFont('helvetica','normal');
+  doc.text("Kelas: " + studentClass, 148.5, 95, { align:'center' });
+
+  doc.setFontSize(16);
+  doc.text(`Total Skor: ${totalScore} / 100   |   Predikat: ${predikat}`, 148.5, 110, { align:'center' });
+
+  doc.setFontSize(12);
+  doc.text("Tanggal: " + new Date().toLocaleDateString('id-ID'), 148.5, 175, { align:'center' });
+
+  doc.setFontSize(11);
+  doc.setTextColor(150,150,150);
+  doc.text("Jelajah Statistika - Media Pembelajaran Matematika Kelas 7 SMP", 148.5, 190, { align:'center' });
+
+  doc.save(`Sertifikat_${studentName.replace(/\s+/g,'_')}.pdf`);
+});
+
+/* =========================================================
+   16. KIRIM HASIL KE GOOGLE SHEETS (via Google Apps Script)
+   Pastikan GOOGLE_SCRIPT_URL di atas sudah diganti dengan URL
+   Web App hasil deploy Google Apps Script (lihat apps_script.gs)
+   ========================================================= */
+const DASHBOARD_URL =
+"https://datastudio.google.com/reporting/b8f3fc44-f346-4a63-bc27-4471409f077e";
+
+const FEEDBACK_URL =
+"https://docs.google.com/forms/d/e/1FAIpQLSeEn4xfaUP_uQqW5dSYn2iXectdByGfBKiLtFXn4XH1XVgZCg/viewform?usp=dialog";
+function sendResultToGoogleSheets(data){
+
+  const payload = new URLSearchParams();
+
+  payload.append("timestamp", new Date().toLocaleString("id-ID"));
+  payload.append("nama", data.nama);
+  payload.append("kelas", data.kelas);
+  payload.append("benar", data.benar);
+  payload.append("salah", data.salah);
+  payload.append("skor", data.skor);
+  payload.append("persen", data.persen);
+  payload.append("predikat", data.predikat);
+
+  fetch(GOOGLE_SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    body: payload
+  });
+
+  console.log("Data dikirim:", data);
+}
+
+document.getElementById('btnDashboard')
+.addEventListener('click',()=>{
+
+  window.open(
+    DASHBOARD_URL,
+    '_blank'
+  );
+
+});
+
+</script>
+</body>
+</html>
